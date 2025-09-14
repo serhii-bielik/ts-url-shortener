@@ -1,33 +1,30 @@
 import express from 'express';
 import dotenv from 'dotenv';
-// import { prisma } from './db';
-// import { notFound, errorHandler } from './middleware/error.middleware';
+import { prisma } from './db';
 import linkRouter from './routes/link.routes';
 
 dotenv.config();
 
-const app = express();
+export const app = express();
 
-async function main() {
-  app.use(express.json());
-  // app.use(notFound);
-  // app.use(errorHandler);
+app.use(express.json());
 
-  app.use('/', linkRouter);
+app.use('/', linkRouter);
 
-  const port = process.env.PORT || '3000';
+const port = Number(process.env.PORT) || 3000;
 
-  app.listen(port, () => {
-    console.log(`Ready on ${port}`);
+const server = app.listen(port, () => {
+  console.log(`✅ Server ready on http://localhost:${port}`);
+});
+
+async function shutdown(signal: string) {
+  console.log(`\n🔌 Received ${signal}, closing server...`);
+  server.close(async () => {
+    await prisma.$disconnect();
+    console.log('✅ Database disconnected');
+    process.exit(0);
   });
 }
 
-main();
-// .then(async () => {
-//   await prisma.$disconnect();
-// })
-// .catch(async (e) => {
-//   console.error(e);
-//   await prisma.$disconnect();
-//   process.exit(1);
-// });
+process.on('SIGINT', () => shutdown('SIGINT'));
+process.on('SIGTERM', () => shutdown('SIGTERM'));
