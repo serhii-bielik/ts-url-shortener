@@ -2,13 +2,11 @@ import { prisma } from '../db';
 import { nanoid } from 'nanoid';
 
 export async function createUniqueSlug() {
-  let slug: string;
-
-  while (true) {
-    slug = nanoid(6);
-    const link = await prisma.link.findUnique({ where: { slug } });
-    if (!link) break;
+  for (let i = 0; i < 10; i++) {
+    const slug = nanoid(6);
+    const exists = await prisma.link.findUnique({ where: { slug } });
+    if (!exists) return slug;
   }
 
-  return slug;
+  throw new Error('Failed to generate unique slug');
 }
