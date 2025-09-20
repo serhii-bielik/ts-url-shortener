@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 import dotenv from 'dotenv';
 import { prisma } from './db';
 import linkRouter from './routes/link.routes';
@@ -7,6 +8,14 @@ import { errorHandler, notFound } from './middleware/error.middleware';
 dotenv.config();
 
 export const app = express();
+
+app.use(
+  cors({
+    origin: process.env.FRONTEND,
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['Content-Type'],
+  }),
+);
 
 app.use(express.json());
 
