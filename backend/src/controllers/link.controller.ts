@@ -7,9 +7,6 @@ import { createUniqueSlug } from '../services/link.service';
 // @access  Public
 export const createShortLink = async (req: Request, res: Response) => {
   const { destination } = req.body;
-  if (!destination || !destination.startsWith('http')) {
-    return res.status(400).json({ error: 'Invalid destination URL' });
-  }
 
   const slug = await createUniqueSlug();
 
